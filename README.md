@@ -2,6 +2,9 @@
 
 A modern, AI-powered credit risk analysis tool built with XGBoost, FastAPI, and SHAP (SHapley Additive exPlanations) for model explainability. This application predicts the probability of loan default based on applicant data and provides a calibrated risk classification.
 
+> **🌐 Live Demo:** [https://credit-risk-assessment-using-shap-uczn.onrender.com](https://credit-risk-assessment-using-shap-uczn.onrender.com)  
+> *(Note: Hosted on Render's free tier. It may take ~50 seconds to wake up upon first request.)*
+
 ## 🚀 Features
 
 * **Machine Learning Model**: Calibrated XGBoost classifier optimized for F1-score with a custom decision threshold.
