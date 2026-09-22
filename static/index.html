@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Underwriting Desk — Credit Risk Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="desk">
+
+  <header class="masthead">
+    <div class="masthead__title">
+      <h1>Underwriting Desk</h1>
+      <p>Enter an applicant's file to get a model-scored default probability.</p>
+    </div>
+    <div class="masthead__meta">
+      <span id="model-status" class="status status--pending">Checking model…</span>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <!-- ===== LEFT: APPLICATION FORM ===== -->
+    <section class="ledger" aria-labelledby="form-heading">
+      <h2 id="form-heading" class="ledger__heading">Applicant file</h2>
+
+      <form id="risk-form" novalidate>
+
+        <fieldset class="ledger__group">
+          <legend>Borrower</legend>
+
+          <div class="field">
+            <label for="person_age">Age</label>
+            <input type="number" id="person_age" name="person_age" min="18" max="100" step="1" value="30" required>
+            <span class="field__unit">years</span>
+          </div>
+
+          <div class="field">
+            <label for="person_income">Annual income</label>
+            <input type="number" id="person_income" name="person_income" min="0" step="100" value="62000" required>
+            <span class="field__unit">$ / yr</span>
+          </div>
+
+          <div class="field">
+            <label for="person_home_ownership">Home ownership</label>
+            <select id="person_home_ownership" name="person_home_ownership" required>
+              <option value="RENT">Rent</option>
+              <option value="MORTGAGE">Mortgage</option>
+              <option value="OWN">Own</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="person_emp_length">Employment length</label>
+            <input type="number" id="person_emp_length" name="person_emp_length" min="0" max="60" step="0.5" value="5" required>
+            <span class="field__unit">years</span>
+          </div>
+        </fieldset>
+
+        <fieldset class="ledger__group">
+          <legend>Loan</legend>
+
+          <div class="field">
+            <label for="loan_intent">Purpose</label>
+            <select id="loan_intent" name="loan_intent" required>
+              <option value="PERSONAL">Personal</option>
+              <option value="EDUCATION">Education</option>
+              <option value="MEDICAL">Medical</option>
+              <option value="VENTURE">Venture</option>
+              <option value="HOMEIMPROVEMENT">Home improvement</option>
+              <option value="DEBTCONSOLIDATION">Debt consolidation</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="loan_grade">Grade</label>
+            <select id="loan_grade" name="loan_grade" required>
+              <option value="A">A</option>
+              <option value="B" selected>B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+              <option value="G">G</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="loan_amnt">Amount requested</label>
+            <input type="number" id="loan_amnt" name="loan_amnt" min="0" step="50" value="10000" required>
+            <span class="field__unit">$</span>
+          </div>
+
+          <div class="field">
+            <label for="loan_int_rate">Interest rate</label>
+            <input type="number" id="loan_int_rate" name="loan_int_rate" min="0" max="40" step="0.01" value="11.5" required>
+            <span class="field__unit">%</span>
+          </div>
+
+          <div class="field field--computed">
+            <label for="loan_percent_income">Loan / income ratio</label>
+            <input type="text" id="loan_percent_income" name="loan_percent_income" readonly tabindex="-1">
+            <span class="field__unit">computed</span>
+          </div>
+        </fieldset>
+
+        <fieldset class="ledger__group">
+          <legend>Credit history</legend>
+
+          <div class="field field--toggle">
+            <label for="cb_person_default_on_file">Prior default on file</label>
+            <div class="toggle" id="default-toggle" role="radiogroup" aria-labelledby="default-toggle-label">
+              <button type="button" class="toggle__option is-active" data-value="N">No</button>
+              <button type="button" class="toggle__option" data-value="Y">Yes</button>
+            </div>
+            <input type="hidden" id="cb_person_default_on_file" name="cb_person_default_on_file" value="N">
+          </div>
+
+          <div class="field">
+            <label for="cb_person_cred_hist_length">Credit history length</label>
+            <input type="number" id="cb_person_cred_hist_length" name="cb_person_cred_hist_length" min="0" max="70" step="1" value="6" required>
+            <span class="field__unit">years</span>
+          </div>
+        </fieldset>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span class="submit-btn__label">Score this file</span>
+          <span class="submit-btn__spinner" aria-hidden="true"></span>
+        </button>
+
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+      </form>
+    </section>
+
+    <!-- ===== RIGHT: RESULT PANEL ===== -->
+    <aside class="verdict" aria-live="polite">
+
+      <div class="verdict__empty" id="verdict-empty">
+        <svg class="verdict__empty-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 5"/>
+          <path d="M32 20v14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="32" cy="42" r="1.6" fill="currentColor"/>
+        </svg>
+        <p>No file scored yet. Fill in the applicant details and submit to see the model's read.</p>
+      </div>
+
+      <div class="verdict__result" id="verdict-result" hidden>
+
+        <div class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 240 150" aria-hidden="true">
+            <path class="gauge__track" d="M20 130 A100 100 0 0 1 220 130" />
+            <path class="gauge__fill" id="gauge-fill" d="M20 130 A100 100 0 0 1 220 130" />
+            <line class="gauge__threshold" id="gauge-threshold" x1="120" y1="130" x2="120" y2="40" />
+            <g id="gauge-needle" class="gauge__needle" style="transform-origin: 120px 130px;">
+              <line x1="120" y1="130" x2="120" y2="48" />
+              <circle cx="120" cy="130" r="6" />
+            </g>
+          </svg>
+          <div class="gauge__reading">
+            <span class="gauge__figure" id="probability-figure">0.00</span>
+            <span class="gauge__figure-label">default probability</span>
+          </div>
+        </div>
+
+        <div class="verdict__badge" id="verdict-badge">
+          <span id="verdict-text">—</span>
+        </div>
+
+        <dl class="verdict__details">
+          <div>
+            <dt>Model threshold</dt>
+            <dd id="detail-threshold">—</dd>
+          </div>
+          <div>
+            <dt>Margin to threshold</dt>
+            <dd id="detail-margin">—</dd>
+          </div>
+        </dl>
+
+        <p class="verdict__note">This score reflects a statistical model trained on historical outcomes, not a lending decision. Pair it with judgment and policy.</p>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <footer class="foot">
+    <span>Credit Risk API · scored on submit</span>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
