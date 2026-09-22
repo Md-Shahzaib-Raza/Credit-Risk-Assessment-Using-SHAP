@@ -84,7 +84,3 @@ The model expects the following inputs to assess risk:
 * **loan_percent_income**: Loan amount divided by annual income
 * **cb_person_default_on_file**: Historical default (Y/N)
 * **cb_person_cred_hist_length**: Credit history length in years
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
